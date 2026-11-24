@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GTU Data Structures 3130702 infix to postfix and prefix converter with stack trace table, plus postfix evaluation</title>
+<meta name="description" content="Infix to postfix is a classic DS stack question, and the marks are in the table: symbol, stack, output, row by row. Expression daalo, the page prints">
+<style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.5}input,textarea,select{margin:.3rem 0;padding:.3rem;width:min(100%,360px);box-sizing:border-box}textarea{width:min(100%,520px);min-height:6rem;font-family:ui-monospace,monospace}#out{font-weight:bold;margin-top:1rem;white-space:pre-wrap;font-family:ui-monospace,monospace;overflow-x:auto}</style></head><body>
+<h1>GTU Data Structures 3130702 infix to postfix and prefix converter with stack trace table, plus postfix evaluation</h1>
+<p>Infix to postfix is a classic DS stack question, and the marks are in the table: symbol, stack, output, row by row. Expression daalo, the page prints that exact table, the postfix and prefix forms, and evaluates a numeric postfix expression step by step. Practice expressions are my own.</p>
+<h2>Tool</h2>
+<label>Infix expression<br><input id="e" value="A+(B*C-(D/E^F)*G)*H"></label><br>
+<label>Postfix to evaluate (numbers, space separated)<br><input id="p" value="5 6 2 + * 12 4 / -"></label><br>
+<button type="button" onclick="go()">Show</button>
+<div id="out"></div>
+<h2>Facts used</h2>
+<ul><li>Operands go straight to the output. &#x27;(&#x27; is pushed. &#x27;)&#x27; pops to the output until the matching &#x27;(&#x27;.</li><li>For an operator, pop while the top has higher precedence, or equal precedence and the operator is left associative. Then push it.</li><li>Precedence: ^ (highest, right associative), then * / %, then + - (left associative).</li><li>Prefix by the reverse method: reverse the infix, swap ( and ), convert to postfix (popping on equal precedence only for ^), then reverse the result.</li><li>Postfix evaluation: push numbers. On an operator pop b, then a, push a op b. The order matters for - and /.</li><li>Default example: A+(B*C-(D/E^F)*G)*H becomes ABC*DEF^/G*-H*+.</li></ul>
+<h2>Galti mat karna</h2>
+<ul><li>Keep three columns (Symbol, Stack, Postfix) and fill one row per symbol. That table is what gets the marks.</li><li>A^B^C is ABC^^ in postfix, not AB^C^. ^ is right associative.</li><li>In postfix evaluation, the first value popped is the right operand: 8 2 - is 8 - 2 = 6.</li><li>Check your answer: the number of operators in postfix must be one less than the number of operands.</li></ul>
+<p>GTU Hero has the Winter 2025 Data Structures (3130702) paper page: 70 marks, 25 questions extracted, with links to the Winter 2024 and Winter 2023 papers and the new scheme code BE03000081. Open it on <a href="https://gtuhero.com/gtu-papers/gujarat-technological-university-3130702-data-structures-winter-2025">GTU Hero</a> (GTU Hero is my project). Source and tests: <a href="https://github.com/PrinceAdvant/gtu-ds-infix-postfix-stack-tracer">github.com/PrinceAdvant/gtu-ds-infix-postfix-stack-tracer</a>.</p>
+<script src="calc.js"></script>
+<script>
+function go(){
+  let out;
+  try {
+    const e = document.getElementById('e').value, r = F.toPostfix(e), pr = F.toPrefix(e);
+    out = 'Symbol   Stack        Postfix\n' + r.rows.map(x => x.symbol.padEnd(9) + (x.stack || '(empty)').padEnd(13) + x.output).join('\n') +
+      '\n\nPostfix: ' + r.postfix + '\nPrefix:  ' + pr.prefix + '  (reversed input used: ' + pr.reversedInput + ')';
+    const p = document.getElementById('p').value.trim();
+    if (p) { const v = F.evalPostfix(p); out += '\n\nEvaluate ' + p + '\n' + v.rows.map(x => x.symbol.padEnd(5) + x.op.padEnd(18) + '[' + x.stack + ']').join('\n') + '\nResult = ' + v.value; }
+  } catch (err) { out = 'Check your input: ' + err.message; }
+  document.getElementById('out').textContent = out;
+}
+go();
+</script>
+</body></html>
